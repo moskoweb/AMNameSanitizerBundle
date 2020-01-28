@@ -1,12 +1,6 @@
 <?php
 
-/*
- * @author      Pedro de Jesus <pedro.jesus@hostnet.com.br>
- * @link        https://www.hostnet.com.br
- * 
- */
-
-namespace MauticPlugin\HostnetNameSanitizerBundle\EventListener;
+namespace MauticPlugin\AMNameSanitizerBundle\EventListener;
 
 use Mautic\CoreBundle\CoreEvents;
 use Mautic\CoreBundle\Event\CustomButtonEvent;
@@ -14,11 +8,10 @@ use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\CoreBundle\Templating\Helper\ButtonHelper;
 use Mautic\LeadBundle\Entity\Lead;
 use Mautic\PluginBundle\Helper\IntegrationHelper;
-use MauticPlugin\HostnetNameSanitizerBundle\Integration\HostnetNameSanitizerIntegration;
+use MauticPlugin\AMNameSanitizerBundle\Integration\AMNameSanitizerIntegration;
 
 class ButtonSubscriber extends CommonSubscriber
 {
-
     /**
      * @var IntegrationHelper
      */
@@ -34,7 +27,7 @@ class ButtonSubscriber extends CommonSubscriber
     public static function getSubscribedEvents()
     {
         return [
-            CoreEvents::VIEW_INJECT_CUSTOM_BUTTONS => ['injectViewButtons', 0]
+            CoreEvents::VIEW_INJECT_CUSTOM_BUTTONS => ['injectViewButtons', 0],
         ];
     }
 
@@ -44,8 +37,8 @@ class ButtonSubscriber extends CommonSubscriber
     public function injectViewButtons(CustomButtonEvent $event)
     {
 
-        $integration = $this->integrationHelper->getIntegrationObject('HostnetNameSanitizer');
-        if (false === $integration || !$integration->getIntegrationSettings()->getIsPublished()) {
+        $integration = $this->integrationHelper->getIntegrationObject('AMNameSanitizer');
+        if (false === $integration || ! $integration->getIntegrationSettings()->getIsPublished()) {
             return;
         }
 
@@ -56,16 +49,16 @@ class ButtonSubscriber extends CommonSubscriber
                     'data-toggle' => '',
                     'data-method' => '',
                     'data-target' => '_blank',
-                    'href' => $this->router->generate('hostnet_sanitize_names'),
+                    'href'        => $this->router->generate('am_sanitize_names'),
                     'data-header' => 'Extra Button',
                 ],
                 'tooltip'   => 'Limpa os nomes dos contatos cadastrados.',
-                'btnText' => 'Limpar nomes',
+                'btnText'   => 'Limpar nomes',
                 'iconClass' => 'fa fa-check',
-                'primary' => false,
+                'primary'   => false,
                 'priority'  => -1,
             ],
-            
+
             /* ButtonHelper::LOCATION_LIST_ACTIONS,
             'mautic_contact_index' */
 
@@ -73,8 +66,7 @@ class ButtonSubscriber extends CommonSubscriber
             'mautic_contact_index'
 
             /* ButtonHelper::LOCATION_PAGE_ACTIONS,
-            ['mautic_contact_action', ['objectAction' => 'view']] */
+        ['mautic_contact_action', ['objectAction' => 'view']] */
         );
     }
-
 }

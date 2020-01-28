@@ -1,15 +1,14 @@
 <?php
 
-namespace MauticPlugin\HostnetNameSanitizerBundle;
+namespace MauticPlugin\AMNameSanitizerBundle;
 
 use Doctrine\DBAL\Schema\Schema;
 use Mautic\PluginBundle\Bundle\PluginBundleBase;
 use Mautic\PluginBundle\Entity\Plugin;
 use Mautic\CoreBundle\Factory\MauticFactory; //Is depracated and will be removed in Mautic 3.0
 
-class HostnetNameSanitizerBundle extends PluginBundleBase
+class AMNameSanitizerBundle extends PluginBundleBase
 {
-
     /**
      * Called by PluginController::reloadAction when adding a new plugin that's not already installed
      *
@@ -18,30 +17,29 @@ class HostnetNameSanitizerBundle extends PluginBundleBase
      * @param null          $metadata
      * @param null          $installedSchema
      */
-    static public function onPluginInstall(Plugin $plugin, MauticFactory $factory, $metadata = null, $installedSchema = null)
+    public static function onPluginInstall(Plugin $plugin, MauticFactory $factory, $metadata = null, $installedSchema = null)
     {
         if ($metadata !== null) {
             self::installPluginSchema($metadata, $factory);
         }
-
     }
 
     /**
-    * Called by PluginController::reloadAction when the plugin version does not match what's installed
-    *
-    * @param Plugin        $plugin
-    * @param MauticFactory $factory
-    * @param null          $metadata
-    * @param Schema        $installedSchema
-    *
-    * @throws \Exception
-    */
-    static public function onPluginUpdate(Plugin $plugin, MauticFactory $factory, $metadata = null, Schema $installedSchema = null)
+     * Called by PluginController::reloadAction when the plugin version does not match what's installed
+     *
+     * @param Plugin        $plugin
+     * @param MauticFactory $factory
+     * @param null          $metadata
+     * @param Schema        $installedSchema
+     *
+     * @throws \Exception
+     */
+    public static function onPluginUpdate(Plugin $plugin, MauticFactory $factory, $metadata = null, Schema $installedSchema = null)
     {
-        $db             = $factory->getDatabase();
-        $platform       = $db->getDatabasePlatform()->getName();
-        $queries        = array();
-        $fromVersion    = $plugin->getVersion();
+        $db = $factory->getDatabase();
+        $platform = $db->getDatabasePlatform()->getName();
+        $queries = array();
+        $fromVersion = $plugin->getVersion();
 
         // Simple example - Altering database structure on the plugin update. $fromVersion receives the actual version of the plugin and do the queries acording to it.
         switch ($fromVersion) {
@@ -60,8 +58,7 @@ class HostnetNameSanitizerBundle extends PluginBundleBase
                 break;
         }
 
-        if (!empty($queries)) {
-
+        if ( ! empty($queries)) {
             $db->beginTransaction();
             try {
                 foreach ($queries as $q) {

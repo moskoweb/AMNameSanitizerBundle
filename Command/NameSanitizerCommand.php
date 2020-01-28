@@ -1,12 +1,6 @@
 <?php
 
-/*
- * @author      Pedro de Jesus <pedro.jesus@hostnet.com.br>
- * @link        https://www.hostnet.com.br
- * 
- */
-
-namespace MauticPlugin\HostnetNameSanitizerBundle\Command;
+namespace MauticPlugin\AMNameSanitizerBundle\Command;
 
 use Mautic\CoreBundle\Command\ModeratedCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,10 +17,10 @@ class NameSanitizerCommand extends ModeratedCommand
         ->setName('mautic:sanitize-names')
 
         // the short description shown while running "php app/console list"
-        ->setDescription('Faz uma validação e correção de todos os nomes na base do Mautic.')
+            ->setDescription('Faz uma validação e correção de todos os nomes na base do Mautic.')
 
         // the full command description shown when running the command with the "--help" option
-        ->setHelp('Este comando vai checar todos os nomes de contatos cadastrados no Mautic e corrigi-los, deixando apenas as primeiras letras em maiúsculo e separando o primeiro nome dos outros.')
+            ->setHelp('Este comando vai checar todos os nomes de contatos cadastrados no Mautic e corrigi-los, deixando apenas as primeiras letras em maiúsculo e separando o primeiro nome dos outros.')
         ;
     }
 
@@ -37,24 +31,20 @@ class NameSanitizerCommand extends ModeratedCommand
         $names = $model->getNames();
 
         $altNames = 0;
-        $output->writeln("<info>Limpando nomes...</info>");        
-        foreach($names as $lead){
-            
-            $fullName = trim($lead['firstname'])." ".trim($lead['lastname']);       
+        $output->writeln("<info>Limpando nomes...</info>");
+        foreach ($names as $lead) {
+            $fullName = trim($lead['firstname']) . " " . trim($lead['lastname']);
             $newFullName = $model->nameCase($fullName);
             $newFirstname = trim(substr($newFullName, 0, strpos($newFullName, " ")));
             $newLastname = trim(substr($newFullName, strpos($newFullName, " ")));
 
-            if($newFirstname != $lead['firstname'] or $newLastname != $lead['lastname']){
+            if ($newFirstname != $lead['firstname'] || $newLastname != $lead['lastname']) {
                 $model->updateName($newFirstname, $newLastname, $lead['id']);
                 $altNames++;
             }
-
         }
         $output->writeln("<comment>Nomes limpos. $altNames contatos alterados no total.</comment>");
 
         return;
-
     }
-
 }
