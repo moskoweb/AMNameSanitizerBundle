@@ -92,13 +92,14 @@ class AMNameSanitizerModel extends FormModel
         $newFullName = $this->nameCase($fullName);
         $firstName = $this->str_before($fullName, ' ');
         $lastName = $this->str_after($fullName, ' ');
+        $leadId = $lead['id'];
 
         if ($firstName != $lead['firstname'] || $lastName != $lead['lastname']) {
             $q = $this->em->getConnection()->createQueryBuilder();
             $query = $q->update(MAUTIC_TABLE_PREFIX . 'leads', 'l')
-                ->set('l.firstname', "'$firstName'")
-                ->set('l.lastname', "'$lastName'")
-                ->where("l.id = $lead['id']")
+                ->set('l.firstname', '"' . $firstName . '"')
+                ->set('l.lastname', '"' . $lastName . '"')
+                ->where("l.id = " . $leadId)
                 ->execute();
 
             return true;
