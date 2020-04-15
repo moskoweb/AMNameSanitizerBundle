@@ -2,11 +2,9 @@
 
 namespace MauticPlugin\AMNameSanitizerBundle\EventListener;
 
+use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
-use Mautic\CoreBundle\EventListener\CommonSubscriber;
-use Mautic\LeadBundle\Entity\LeadList;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Mautic\PluginBundle\Helper\IntegrationHelper;
 
 class LeadSubscriber extends CommonSubscriber
@@ -30,7 +28,6 @@ class LeadSubscriber extends CommonSubscriber
 
     public function onLeadPostSave(LeadEvent $event)
     {
-
         $integration = $this->integrationHelper->getIntegrationObject('AMNameSanitizer');
         if (false === $integration || ! $integration->getIntegrationSettings()->getIsPublished() || ! $integration->getInsertSanitize()) {
             return;
@@ -40,20 +37,10 @@ class LeadSubscriber extends CommonSubscriber
         $pluginModel = $this->factory->getModel('namesanitizer.model');
 
         //Pega os dados do lead que está sendo inserido
-        $id = $event->getLead()->getId();
-        $firstname = $event->getLead()->getFirstname();
-        $lastname = $event->getLead()->getLastname();
-        $fullName = trim($firstname) . " " . trim($lastname);
-
-        //Faz o tratamento do nome
-        $newFullName = $pluginModel->nameCase($fullName);
-        $newFirstname = trim(substr($newFullName, 0, strpos($newFullName, " ")));
-        $newLastname = trim(substr($newFullName, strpos($newFullName, " ")));
+        $lead = $event->getLead();
 
         //Altera no banco o nome do lead inserido
-        if ($newFirstname != $firstname || $newLastname != $lastname) {
-            $pluginModel->updateName($newFirstname, $newLastname, $id);
-        }
+        $pluginModel->updateName($lead);
 
         return;
     }

@@ -86,17 +86,33 @@ class AMNameSanitizerModel extends FormModel
      *
      * @return bool
      */
-    public function updateName($newFirstname, $newLastname, $leadId)
+    public function updateName($lead)
     {
+        $fullName = trim($lead['firstname']) . ' ' . trim($lead['lastname']);
+        $newFullName = $this->nameCase($fullName);
+        $firstName = $this->str_before($fullName, ' ');
+        $lastName = $this->str_after($fullName, ' ');
 
-        $q = $this->em->getConnection()->createQueryBuilder();
+        if ($firstName != $lead['firstname'] || $lastName != $lead['lastname']) {
+            $q = $this->em->getConnection()->createQueryBuilder();
+            $query = $q->update(MAUTIC_TABLE_PREFIX . 'leads', 'l')
+                ->set('l.firstname', "'$firstName'")
+                ->set('l.lastname', "'$lastName'")
+                ->where("l.id = $lead['id']")
+                ->execute();
 
-        $query = $q->update(MAUTIC_TABLE_PREFIX . 'leads', 'l')
-            ->set('l.firstname', "'$newFirstname'")
-            ->set('l.lastname', "'$newLastname'")
-            ->where("l.id = $leadId")
-            ->execute();
+            return true;
+        }
+        return false;
+    }
 
-        return true;
+    public function str_before($subject, $search)
+    {
+        return $search === '' ? $subject : explode($search, $subject)[0];
+    }
+
+    public function str_after($subject, $search)
+    {
+        return $search === '' ? $subject : explode($search, $subject)[1];
     }
 }
