@@ -88,13 +88,20 @@ class AMNameSanitizerModel extends FormModel
      */
     public function updateName($lead)
     {
-        $fullName = trim($lead['firstname']) . ' ' . trim($lead['lastname']);
+        if (is_object($lead)) {
+            $leadTemp['firstname'] = $lead->firstname;
+            $leadTemp['lastname'] = $lead->lastname;
+        } else {
+            $leadTemp['firstname'] = $lead['firstname'];
+            $leadTemp['lastname'] = $lead['lastname'];
+        }
+        $fullName = trim($leadTemp['firstname']) . ' ' . trim($leadTemp['lastname']);
         $newFullName = $this->nameCase($fullName);
         $firstName = $this->str_before($fullName, ' ');
         $lastName = $this->str_after($fullName, ' ');
         $leadId = $lead['id'];
 
-        if ($firstName != $lead['firstname'] || $lastName != $lead['lastname']) {
+        if ($firstName != $leadTemp['firstname'] || $lastName != $leadTemp['lastname']) {
             $q = $this->em->getConnection()->createQueryBuilder();
             $query = $q->update(MAUTIC_TABLE_PREFIX . 'leads', 'l')
                 ->set('l.firstname', '"' . $firstName . '"')
