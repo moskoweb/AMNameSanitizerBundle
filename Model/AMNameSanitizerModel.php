@@ -91,15 +91,16 @@ class AMNameSanitizerModel extends FormModel
         if (is_object($lead)) {
             $leadTemp['firstname'] = $lead->firstname;
             $leadTemp['lastname'] = $lead->lastname;
+            $leadId = $lead->id;
         } else {
             $leadTemp['firstname'] = $lead['firstname'];
             $leadTemp['lastname'] = $lead['lastname'];
+            $leadId = $lead['id'];
         }
         $fullName = trim($leadTemp['firstname']) . ' ' . trim($leadTemp['lastname']);
         $newFullName = $this->nameCase($fullName);
         $firstName = $this->str_before($fullName, ' ');
         $lastName = $this->str_after($fullName, ' ');
-        $leadId = $lead['id'];
 
         if ($firstName != $leadTemp['firstname'] || $lastName != $leadTemp['lastname']) {
             $q = $this->em->getConnection()->createQueryBuilder();
